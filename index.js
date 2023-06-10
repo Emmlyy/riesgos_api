@@ -46,11 +46,77 @@ app.post('/convert_txt_to_xml', upload.single('file'), (req, res) => {
 });
 //////////////////////////////////////////////////////////////////////////////////////////
 
+//const fs = require('fs');
+
+
+// Función para parsear una línea específica según el formato deseado
+function parseLine(line) {
+  // Ejemplo de identificación y parseo de línea
+  const [documento, nombre, apellido, tarjeta, tipo, telefono, poligono] = line.split(';');
+
+  // Crear un objeto JSON con los datos identificados
+  const jsonObject = {
+    documento: documento.trim(),
+    nombre: nombre.trim(),
+    apellido: apellido.trim(),
+    tarjeta: parseInt(tarjeta.trim()),
+    tipo:tipo.trim(),
+    telefono:telefono.trim(),
+    poligono: poligono.trim(),
+  };
+
+  return jsonObject;
+}
+
+
+function convertTxtToJson(txtContent) {
+  // Realizar aquí la lógica de conversión de TXT a JSON según tus requerimientos
+  // En este ejemplo, se asume que cada línea del archivo TXT contiene un objeto JSON válido
+
+  const lines = txtContent.split(';;');
+  let json = [];
+
+  
+  // Procesar cada línea
+  lines.forEach((line) => {
+    // Identificar y parsear la línea según el formato deseado
+    const parsedObject = parseLine(line);
+
+    // Agregar el objeto JSON al arreglo
+    json.push(parsedObject);
+  });
+
+
+
+ for (let line of lines) {
+    try {
+      const jsonObject = JSON.parse(line);
+      json.push(jsonObject);
+    } catch (error) {
+      console.error(`Error parsing line: ${line}`);
+    }
+  }
+
+  return json;
+}
+
+// Ruta para subir el archivo TXT y convertirlo a JSON
+app.post('/convert_txt_to_json', upload.single('file'), (req, res) => {
+  // Leer el contenido del archivo TXT
+  const txtContent = fs.readFileSync(req.file.path, 'utf-8');
+
+  // Convertir el contenido del archivo TXT a JSON
+  const jsonContent = convertTxtToJson(txtContent);
+
+  res.json(jsonContent);
+});
 
 
 
 
 
+
+///////////////////////////////////////////////////////////////////////
 // Iniciar el servidor
 app.listen(PORT, () => {
   console.log(`La API está escuchando en el puerto ${PORT}`);
