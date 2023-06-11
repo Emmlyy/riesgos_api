@@ -6,6 +6,10 @@ const PORT = 3000; // Puerto en el que se ejecutará la API
 const multer = require("multer");
 // Configurar multer para manejar el archivo subido
 const upload = multer({ dest: "uploads/" });
+const xmlbuilder = require('xmlbuilder');
+const xml2js = require('xml2js');
+
+
 
 // Configurar body-parser
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -24,6 +28,9 @@ app.get("/", (req, res) => {
   res.send("¡Hola, mundo!");
 });
 ////////////////
+
+const fs = require('fs');
+const { Console } = require('console');
 // Función para parsear una línea específica según el formato deseado
 function parseLine(line) {
   // Ejemplo de identificación y parseo de línea
@@ -45,7 +52,6 @@ function parseLine(line) {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////
-const fs = require("fs");
 
 function convertTxtToXml(txtContent) {
   // Realizar aquí la lógica de conversión de TXT a JSON según tus requerimientos
@@ -53,32 +59,39 @@ function convertTxtToXml(txtContent) {
 
   const lines = txtContent.split("\n");
 
-  let xml = [];
+  const xml = xmlbuilder.create('clientes');
+
 
   // Procesar cada línea
   lines.forEach((line) => {
+  
     try {
       // Identificar y parsear la línea según el formato deseado
       const parsedObject = parseLine(line);
+      const cliente = xml.ele('cliente');
+      cliente.ele('documento',parsedObject.documento);
+      cliente.ele('nombre',parsedObject.nombre);
+      cliente.ele('tarjeta',parsedObject.tarjeta);
+      cliente.ele('tipo',parsedObject.tipo);
+      cliente.ele('telefono',parsedObject.telefono);
+      cliente.ele('poligono',parsedObject.poligono);
 
-      const xmlContent = `<clientes><cliente><documento>${parsedObject.documento}</documento><nombre>${parsedObject.nombre}</nombre><apellido>${parsedObject.apellido}</apellido><tarjeta>${parsedObject.tarjeta}</tarjeta><tipo>${parsedObject.tipo}</tipo><telefono>${parsedObject.telefono}</telefono><poligono>${parsedObject.poligono}</poligono></cliente></clientes>`;
-      // Agregar el objeto JSON al arreglo
-      xml.push(xmlContent);
+    // Obtener el XML como una cadena
     } catch (error) {
       console.error(`Error parsing line: ${line}`);
     }
+
   });
+ const xmlString = xml.end({ pretty: true });
 
-  return xml;
+
+  return xmlString;
 }
-
 // Ruta para subir el archivo TXT y convertirlo a XML
 app.post("/convert_txt_to_xml", upload.single("file"), (req, res) => {
   // Aquí puedes realizar la lógica de conversión de TXT a XML
   // req.file contiene la información del archivo subido
 
-  // Ejemplo de conversión sencilla a XML
-  //const xml = `<root>${req.file.buffer.toString()}</root>`;
 
   // Leer el contenido del archivo TXT
   const txtContent = fs.readFileSync(req.file.path, "utf-8");
@@ -96,10 +109,6 @@ function convertTxtToJson(txtContent) {
   // En este ejemplo, se asume que cada línea del archivo TXT contiene un objeto JSON válido
 
   const lines = txtContent.split("\n");
-  /* const [obj] = txtContent.split(';;');
-const lines = {
-  obj: obj.trim()
-}*/
 
   let json = [];
 
@@ -130,6 +139,46 @@ app.post("/convert_txt_to_json", upload.single("file"), (req, res) => {
 });
 
 ///////////////////////////////////////////////////////////////////////
+
+
+function convertXMLtoTXT(xmlContent) {
+  let txtContent = '';
+
+  xml2js.parseString(xmlContent, (err, result) => {
+    if (err) {
+      throw new Error('Error al analizar el XML');
+    }
+
+    const clientes = result.clientes.cliente;
+    clientes.forEach(cliente => {
+      const attributes = Object.keys(cliente);
+      const values = attributes.map(attribute => cliente[attribute][0]);
+      const line = values.join(';');
+
+      txtContent += line + '\n';
+    });
+  });
+
+  return txtContent;
+}
+
+
+
+//Ruta para subir el archivo XML y convertirlo a TXT
+// Ruta para subir el archivo XML y convertirlo a TXT
+app.post('/convert_xml_to_txt', upload.single('file'), (req, res) => {
+  // Leer el contenido del archivo XML
+  const xmlContent = fs.readFileSync(req.file.path, 'utf-8');
+
+  // Convertir el contenido del archivo XML a TXT
+  const txtContent = convertXMLtoTXT(xmlContent);
+
+  res.set('Content-Type', 'text/plain');
+  res.send(txtContent);
+});
+
+
+/////////////////////////////////////////
 // Iniciar el servidor
 app.listen(PORT, () => {
   console.log(`La API está escuchando en el puerto ${PORT}`);
