@@ -14,19 +14,58 @@ app.use(bodyParser.json());
 app.get('/', (req, res) => {
   res.send('¡Hola, mundo!');
 });
+////////////////
+// Función para parsear una línea específica según el formato deseado
+function parseLine(line) {
+  // Ejemplo de identificación y parseo de línea
+  const [documento, nombre, apellido, tarjeta, tipo, telefono, poligono] = line.split(';');
+
+  // Crear un objeto JSON con los datos identificados
+  const jsonObject = {
+    documento: documento.trim(),
+    nombre: nombre.trim(),
+    apellido: apellido.trim(),
+    tarjeta: tarjeta.trim(),
+    tipo:tipo.trim(),
+    telefono:telefono.trim(),
+    poligono: poligono.trim(),
+  };
+
+  return jsonObject;
+}
+
+
 //////////////////////////////////////////////////////////////////////////////////////
 const fs = require('fs');
 
 function convertTxtToXml(txtContent) {
-  // Realizar aquí la lógica de conversión de TXT a XML según tus requerimientos
-  const lines = txtContent.split(';;');
+  // Realizar aquí la lógica de conversión de TXT a JSON según tus requerimientos
+  // En este ejemplo, se asume que cada línea del archivo TXT contiene un objeto JSON válido
 
-  // En este ejemplo, simplemente se envuelve el contenido del TXT en etiquetas XML
+const lines = txtContent.split('\n');
+ 
+let xml=[] ;
 
-  const xmlContent = `<root>${txtContent}</root>`;
-  return xmlContent;
+  // Procesar cada línea
+  lines.forEach((line) => {
+  
+    try {
+      // Identificar y parsear la línea según el formato deseado
+      const parsedObject = parseLine(line);
+
+      const xmlContent = 
+      `<clientes><cliente><documento>${parsedObject.documento}</documento><nombre>${parsedObject.nombre}</nombre><apellido>${parsedObject.apellido}</apellido><tarjeta>${parsedObject.tarjeta}</tarjeta><tipo>${parsedObject.tipo}</tipo><telefono>${parsedObject.telefono}</telefono><poligono>${parsedObject.poligono}</poligono></cliente></clientes>`;      
+      // Agregar el objeto JSON al arreglo
+      xml.push(xmlContent);
+    } catch (error) {
+      console.error(`Error parsing line: ${line}`);
+    }
+
+  });
+
+
+  return xml;
 }
-
 
 // Ruta para subir el archivo TXT y convertirlo a XML
 app.post('/convert_txt_to_xml', upload.single('file'), (req, res) => {
@@ -47,29 +86,6 @@ app.post('/convert_txt_to_xml', upload.single('file'), (req, res) => {
   res.send(xml);
 });
 //////////////////////////////////////////////////////////////////////////////////////////
-
-//const fs = require('fs');
-
-
-// Función para parsear una línea específica según el formato deseado
-function parseLine(line) {
-  // Ejemplo de identificación y parseo de línea
-  const [documento, nombre, apellido, tarjeta, tipo, telefono, poligono] = line.split(';');
-
-  // Crear un objeto JSON con los datos identificados
-  const jsonObject = {
-    documento: documento.trim(),
-    nombre: nombre.trim(),
-    apellido: apellido.trim(),
-    tarjeta: parseInt(tarjeta.trim()),
-    tipo:tipo.trim(),
-    telefono:telefono.trim(),
-    poligono: poligono.trim(),
-  };
-
-  return jsonObject;
-}
-
 
 function convertTxtToJson(txtContent) {
   // Realizar aquí la lógica de conversión de TXT a JSON según tus requerimientos
