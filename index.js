@@ -51,7 +51,11 @@ function parseLine(line) {
   return jsonObject;
 }
 
+
 //////////////////////////////////////////////////////////////////////////////////////
+/////////////TXT TO XML//////////////////
+/////////////////////////////////////////////////////////////////////////
+
 
 function convertTxtToXml(txtContent) {
   // Realizar aquí la lógica de conversión de TXT a JSON según tus requerimientos
@@ -103,6 +107,9 @@ app.post("/convert_txt_to_xml", upload.single("file"), (req, res) => {
   res.send(xml);
 });
 //////////////////////////////////////////////////////////////////////////////////////////
+////////////TXT TO JSON/////////////////////
+//////////////////////////////////////////////////////////////////////////
+
 
 function convertTxtToJson(txtContent) {
   // Realizar aquí la lógica de conversión de TXT a JSON según tus requerimientos
@@ -139,7 +146,8 @@ app.post("/convert_txt_to_json", upload.single("file"), (req, res) => {
 });
 
 ///////////////////////////////////////////////////////////////////////
-
+///////////////// XML TO TXT///////////////////
+////////////////////////////////////////////////////////////////////
 
 function convertXMLtoTXT(xmlContent) {
   let txtContent = '';
@@ -176,7 +184,44 @@ app.post('/convert_xml_to_txt', upload.single('file'), (req, res) => {
   res.set('Content-Type', 'text/plain');
   res.send(txtContent);
 });
+///////////////////////////////////////////////////////////////////////
+/////////////////  JSON TO TXT ////////////////
+//////////////////////////////////////////////////////////////////////
 
+function convertJsonToTxt(jsonArray) {
+
+  const txt = jsonArray.map(obj => Object.values(obj).join(';')).join('\n');
+  
+    return txt;
+  }
+  
+  // Ruta para recibir un objeto JSON y convertirlo a TXT
+  app.post('/convert_json_to_txt', upload.single('file'), (req, res) => {
+  
+  const jsonContent= fs.readFileSync(req.file.path, 'utf-8');
+  const jsonArray = JSON.parse(jsonContent);
+  // Convertir el array JSON a TXT
+  const txtContent = convertJsonToTxt(jsonArray);  
+  
+  /*try{
+    const jsonArray = JSON.parse(jsonContent);
+  
+    if (Array.isArray(jsonArray)) {
+      // Aquí puedes realizar las operaciones con el jsonArray válido
+      
+      // Convertir el array JSON a TXT
+       txtContent = convertJsonToTxt(jsonArray);  
+    } else {
+      console.log('El archivo JSON no contiene un array válido.');
+    }
+  } catch (error) {
+    console.error('Error al analizar el contenido JSON:', error);
+  }*/
+  
+  
+    res.set('Content-Type', 'text/plain');
+    res.send(txtContent);
+  });
 
 /////////////////////////////////////////
 // Iniciar el servidor
