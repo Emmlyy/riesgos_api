@@ -19,6 +19,8 @@ const fs = require('fs');
 
 function convertTxtToXml(txtContent) {
   // Realizar aquí la lógica de conversión de TXT a XML según tus requerimientos
+  const lines = txtContent.split(';;');
+
   // En este ejemplo, simplemente se envuelve el contenido del TXT en etiquetas XML
 
   const xmlContent = `<root>${txtContent}</root>`;
@@ -73,29 +75,29 @@ function convertTxtToJson(txtContent) {
   // Realizar aquí la lógica de conversión de TXT a JSON según tus requerimientos
   // En este ejemplo, se asume que cada línea del archivo TXT contiene un objeto JSON válido
 
-  const lines = txtContent.split(';;');
+const lines = txtContent.split('\n');
+ /* const [obj] = txtContent.split(';;');
+const lines = {
+  obj: obj.trim()
+}*/
+
   let json = [];
 
   
   // Procesar cada línea
   lines.forEach((line) => {
-    // Identificar y parsear la línea según el formato deseado
-    const parsedObject = parseLine(line);
-
-    // Agregar el objeto JSON al arreglo
-    json.push(parsedObject);
-  });
-
-
-
- for (let line of lines) {
+  
     try {
-      const jsonObject = JSON.parse(line);
-      json.push(jsonObject);
+      // Identificar y parsear la línea según el formato deseado
+      const parsedObject = parseLine(line);
+      // Agregar el objeto JSON al arreglo
+      json.push(parsedObject);
     } catch (error) {
       console.error(`Error parsing line: ${line}`);
     }
-  }
+
+  });
+
 
   return json;
 }
