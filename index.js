@@ -211,7 +211,7 @@ function convertJsonToTxt(jsonArray, delimiter, key) {
 
     
     const jsonContent= fs.readFileSync(req.file.path, 'utf-8');
-    //const jsonArray = JSON.parse(jsonContent, delimiter);
+    const jsonArray = JSON.parse(jsonContent, delimiter);
     // Convertir el array JSON a TXT
     const txtContent = convertJsonToTxt(jsonArray, delimiter, key);  
     

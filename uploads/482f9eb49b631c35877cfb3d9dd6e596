@@ -1,0 +1,20 @@
+[
+    {
+        "documento": "03110567-7",
+        "nombre": "Jaime Roberto",
+        "apellido": "Climaco Navarrete",
+        "tarjeta": "2346570012456",
+        "tipo": "GOLD",
+        "telefono": "22779898",
+        "poligono": "((-90.7695083618164 17.817752838134766, -90.743))"
+    },
+    {
+        "documento": "08111567-7",
+        "nombre": "JuanRodolfo",
+        "apellido": "Perez",
+        "tarjeta": "68934657001245",
+        "tipo": "ELITE",
+        "telefono": "22551004",
+        "poligono": "((-90.6795083618164 14.907752838134766, -89.12396514892578))"
+    }
+]
