@@ -1,0 +1,179 @@
+{
+	"info": {
+		"_postman_id": "0c23abe9-8318-4247-9284-66b7ea8cb1ab",
+		"name": "Riesgo",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "26460101"
+	},
+	"item": [
+		{
+			"name": "TXT to XML",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/Users/javiervillatoro/Downloads/originalTXT.txt"
+						},
+						{
+							"key": "demiliter",
+							"value": ";",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "key",
+							"value": "222",
+							"type": "text",
+							"disabled": true
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:3000/convert_txt_to_xml/;/200",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"convert_txt_to_xml",
+						";",
+						"200"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "TXT to JSON",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/Users/javiervillatoro/Downloads/originalTXT.txt"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:3000/convert_txt_to_json/;/200",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"convert_txt_to_json",
+						";",
+						"200"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "XML to TXT",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/Users/javiervillatoro/Downloads/xml_a_decifrar.xml"
+						},
+						{
+							"key": "publicKey",
+							"value": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwY8P8Kkd+fBCGxv4lVp+\nmnvn+RMp19sA6ZLIwa826BvMgPTCwRBCVWv0fTPlsYEp126M1Qmtfnm8pD6nolNF\n2xDIyVoCaaZuChdbgEbG6Mv2Imtk0AnO14LsOZ+zS+3teA3MTVQhyml/cmC8KK6N\nB5QJgM2Zeoe8C+QRK2RIk6xuwZG7kMePXaUn8/ReHvlCQUdpMOBbsrDASFDgGCtK\nAb4hJrnQnqWZDhFQ+/JWptTD2ERs2sxDBHYf2Au/IzgJUG4if87wb/KxQL0pNrHV\nH8OIp7jYPD8g+0SABq3VKAuktNNSy5K1OTIjqolC5+PrTvxMc3zrfb3TIyfPGKsj\nawIDAQAB\n-----END PUBLIC KEY-----\n",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:3000/convert_xml_to_txt/-/200",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"convert_xml_to_txt",
+						"-",
+						"200"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "JSON to TXT",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/Users/javiervillatoro/Downloads/json_a_decifrar.json"
+						},
+						{
+							"key": "publicKey",
+							"value": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwY8P8Kkd+fBCGxv4lVp+\nmnvn+RMp19sA6ZLIwa826BvMgPTCwRBCVWv0fTPlsYEp126M1Qmtfnm8pD6nolNF\n2xDIyVoCaaZuChdbgEbG6Mv2Imtk0AnO14LsOZ+zS+3teA3MTVQhyml/cmC8KK6N\nB5QJgM2Zeoe8C+QRK2RIk6xuwZG7kMePXaUn8/ReHvlCQUdpMOBbsrDASFDgGCtK\nAb4hJrnQnqWZDhFQ+/JWptTD2ERs2sxDBHYf2Au/IzgJUG4if87wb/KxQL0pNrHV\nH8OIp7jYPD8g+0SABq3VKAuktNNSy5K1OTIjqolC5+PrTvxMc3zrfb3TIyfPGKsj\nawIDAQAB\n-----END PUBLIC KEY-----\n",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:3000/convert_json_to_txt/-----/llaveX",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"convert_json_to_txt",
+						"-----",
+						"llaveX"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "apikey"
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

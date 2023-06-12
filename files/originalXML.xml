@@ -1,0 +1,20 @@
+<clientes>
+    <cliente>
+        <documento>03110567-7</documento>
+        <nombre>Jaime Roberto</nombre>
+        <apellido>Climaco Navarrete</apellido>
+        <tarjeta>2346570012456</tarjeta>
+        <tipo>GOLD</tipo>
+        <telefono>22779898</telefono>
+        <poligono>((-90.7695083618164 17.817752838134766, -90.743))</poligono>
+    </cliente>
+     <cliente>
+        <documento>08111567-7</documento>
+        <nombre>JuanRodolfo</nombre>
+        <apellido>Perez</apellido>
+        <tarjeta>68934657001245</tarjeta>
+        <tipo>ELITE</tipo>
+        <telefono>22551004</telefono>
+        <poligono>((-90.6795083618164 14.907752838134766, -89.12396514892578))</poligono>
+    </cliente>
+</clientes>

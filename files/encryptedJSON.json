@@ -1,0 +1,20 @@
+[
+    {
+        "documento": "03110567-7",
+        "nombre": "Jaime Roberto",
+        "apellido": "Climaco Navarrete",
+        "tarjeta": "eyJhbGciOiJSUzI1NiJ9.MjM0NjU3MDAxMjQ1Ng.A3S5rLQ2_11Wj4eWQrZST9g-DCiQhWU7JOJD9IjgSvWHTA2Y3kJ6TQGn4eMlMl0HiAArzlPq65o7z5eGmLQrR_Eml1Ac7jdFOfSKVA-PGEYlrpRCshTQDvnZZnILhYnLb9qDdVkmkFJ1dP6738TdjcAQbU5gHXmDeBX_wkT2U9BJ_8wlgA6R8pLasAxJRivb8tqhnz90LLWhijkUqNDWYEaSsXehcS88XtlLBlytwEQDDM479OLiCkPs6GdlIh57RYKSZ4lU5i5nBrOqTSOeL1lr38D86LOHyLLyTlJzljmkMCTzCx67Kbzbo2AEmS1u_UU8XP00zhtI9_1lmXrf8A",
+        "tipo": "GOLD",
+        "telefono": "22779898",
+        "poligono": "((-90.7695083618164 17.817752838134766, -90.743))"
+    },
+    {
+        "documento": "08111567-7",
+        "nombre": "JuanRodolfo",
+        "apellido": "Perez",
+        "tarjeta": "eyJhbGciOiJSUzI1NiJ9.Njg5MzQ2NTcwMDEyNDU.j_qi_l_w-yJrAv245MzBMXrQWI5oz7K3w9KSwl4LIixvYdGfFAzN1qdho-y1TIahtrTShkcbt0nQQiDu3w4_z6kTT7MIUzm70yHm6ZrLfXV0wHu6xnLLofzd1COiJmYo5IYAe31HCj1jPAOOXrOy7tx9YPaiqtbpJXBwybdd3pQR8PRqSnuU23fpGsghK8DFZWA-l6QIImLw4HoeBwgPqXf93MFfWiwLQ5kQgLSD_FIBDr3W6fMiHuxI8WG_CvRb0ygD_lq-LdKALLFSQHIDfs-dUdlmy48pbFx6XzS25PmBwNYT0Qat1SuDo-UECWjz-YM01bLEdWyAbBnT6WjfnA",
+        "tipo": "ELITE",
+        "telefono": "22551004",
+        "poligono": "((-90.6795083618164 14.907752838134766, -89.12396514892578))"
+    }
+]
