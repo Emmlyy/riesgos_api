@@ -8,8 +8,9 @@ const multer = require("multer");
 const upload = multer({ dest: "uploads/" });
 const xmlbuilder = require('xmlbuilder');
 const xml2js = require('xml2js');
-
-
+const fs = require('fs');
+const privateKey = fs.readFileSync('keys/private.pem', 'utf-8');
+const jwt = require('jsonwebtoken');
 
 // Configurar body-parser
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -29,7 +30,6 @@ app.get("/", (req, res) => {
 });
 ////////////////
 
-const fs = require('fs');
 const { Console } = require('console');
 const { delimiter } = require("path");
 
@@ -46,7 +46,7 @@ function parseLine(line, delimiter) {
     documento: documento.trim(),
     nombre: nombre.trim(),
     apellido: apellido.trim(),
-    tarjeta: tarjeta.trim(),
+    tarjeta: encryptCardNumber(tarjeta.trim()),
     tipo: tipo.trim(),
     telefono: telefono.trim(),
     poligono: poligono.trim(),
@@ -55,6 +55,10 @@ function parseLine(line, delimiter) {
   return jsonObject;
 }
 
+// Función para encriptar el número de tarjeta
+const encryptCardNumber = (cardNumber) => jwt.sign(cardNumber, privateKey, { algorithm: 'RS256' });
+// Función para desencriptar el número de tarjeta
+const decryptCardNumber = (encryptedCardNumber, publicKey) => jwt.verify(encryptedCardNumber, publicKey);
 
 //////////////////////////////////////////////////////////////////////////////////////
 /////////////TXT TO XML//////////////////
@@ -79,7 +83,7 @@ function convertTxtToXml(txtContent, delimiter, key) {
       const cliente = xml.ele('cliente');
       cliente.ele('documento',parsedObject.documento);
       cliente.ele('nombre',parsedObject.nombre);
-      cliente.ele('tarjeta',parsedObject.tarjeta);
+      cliente.ele('tarjeta', encryptCardNumber(parsedObject.tarjeta));
       cliente.ele('tipo',parsedObject.tipo);
       cliente.ele('telefono',parsedObject.telefono);
       cliente.ele('poligono',parsedObject.poligono);
@@ -155,7 +159,7 @@ app.post("/convert_txt_to_json/:delimiter/:key", upload.single("file"), (req, re
 ///////////////// XML TO TXT///////////////////
 ////////////////////////////////////////////////////////////////////
 
-function convertXMLtoTXT(xmlContent, delimiter, key) {
+function convertXMLtoTXT(xmlContent, delimiter, key, publicKey) {
   let txtContent = '';
 
   xml2js.parseString(xmlContent, (err, result) => {
@@ -166,7 +170,12 @@ function convertXMLtoTXT(xmlContent, delimiter, key) {
     const clientes = result.clientes.cliente;
     clientes.forEach(cliente => {
       const attributes = Object.keys(cliente);
-      const values = attributes.map(attribute => cliente[attribute][0]);
+      const values = attributes.map((attribute) => {
+        if (attribute === 'tarjeta' && publicKey) {
+          return decryptCardNumber(cliente[attribute][0], publicKey);
+        }
+        return cliente[attribute][0];
+      });
       const line = values.join(delimiter);
 
       txtContent += line + '\n';
@@ -188,7 +197,7 @@ app.post('/convert_xml_to_txt/:delimiter/:key', upload.single('file'), (req, res
   const xmlContent = fs.readFileSync(req.file.path, 'utf-8');
 
   // Convertir el contenido del archivo XML a TXT
-  const txtContent = convertXMLtoTXT(xmlContent, delimiter, key);
+  const txtContent = convertXMLtoTXT(xmlContent, delimiter, key, req.body.publicKey);
 
   res.set('Content-Type', 'text/plain');
   res.send(txtContent);
@@ -197,12 +206,15 @@ app.post('/convert_xml_to_txt/:delimiter/:key', upload.single('file'), (req, res
 /////////////////  JSON TO TXT ////////////////
 //////////////////////////////////////////////////////////////////////
 
-function convertJsonToTxt(jsonArray, delimiter, key) {
-
-  const txt = jsonArray.map(obj => Object.values(obj).join(delimiter)).join('\n');
-  
-    return txt;
-  }
+function convertJsonToTxt(jsonArray, delimiter, key, publicKey) {
+  const txt = jsonArray.map(obj => {
+    if (publicKey) {
+      obj.tarjeta = decryptCardNumber(obj.tarjeta, publicKey);
+    }
+    return Object.values(obj).join(delimiter);
+  }).join('\n');
+  return txt;
+}
   
   // Ruta para recibir un objeto JSON y convertirlo a TXT
   app.post('/convert_json_to_txt/:delimiter/:key', upload.single('file'), (req, res) => {
@@ -213,7 +225,7 @@ function convertJsonToTxt(jsonArray, delimiter, key) {
     const jsonContent= fs.readFileSync(req.file.path, 'utf-8');
     const jsonArray = JSON.parse(jsonContent, delimiter);
     // Convertir el array JSON a TXT
-    const txtContent = convertJsonToTxt(jsonArray, delimiter, key);  
+    const txtContent = convertJsonToTxt(jsonArray, delimiter, key, req.body.publicKey);  
     
   /*try{
     const jsonArray = JSON.parse(jsonContent);
