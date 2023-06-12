@@ -1,16 +1,19 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const app = express();
-const PORT = 3000; // Puerto en el que se ejecutará la API
 const multer = require("multer");
-// Configurar multer para manejar el archivo subido
-const upload = multer({ dest: "uploads/" });
 const xmlbuilder = require('xmlbuilder');
 const xml2js = require('xml2js');
 const fs = require('fs');
-const privateKey = fs.readFileSync('keys/private.pem', 'utf-8');
 const jwt = require('jsonwebtoken');
+
+const app = express();
+const PORT = 3000;
+
+const privateKey = fs.readFileSync('keys/private.pem', 'utf-8');
+
+// Configurar multer para manejar el archivo subido
+const upload = multer({ dest: "uploads/" });
 
 // Configurar body-parser
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -28,11 +31,6 @@ app.use(function (req, res, next) {
 app.get("/", (req, res) => {
   res.send("¡Hola, mundo!");
 });
-////////////////
-
-const { Console } = require('console');
-const { delimiter } = require("path");
-
 
 //////////////////////////////////////////////////////////////////////////////////
 // Función para parsear una línea específica según el formato deseado
@@ -57,6 +55,7 @@ function parseLine(line, delimiter) {
 
 // Función para encriptar el número de tarjeta
 const encryptCardNumber = (cardNumber) => jwt.sign(cardNumber, privateKey, { algorithm: 'RS256' });
+
 // Función para desencriptar el número de tarjeta
 const decryptCardNumber = (encryptedCardNumber, publicKey) => jwt.verify(encryptedCardNumber, publicKey);
 
@@ -64,75 +63,50 @@ const decryptCardNumber = (encryptedCardNumber, publicKey) => jwt.verify(encrypt
 /////////////TXT TO XML//////////////////
 /////////////////////////////////////////////////////////////////////////
 
-
 function convertTxtToXml(txtContent, delimiter, key) {
-  // Realizar aquí la lógica de conversión de TXT a JSON según tus requerimientos
-  // En este ejemplo, se asume que cada línea del archivo TXT contiene un objeto JSON válido
-
   const lines = txtContent.split("\n");
 
   const xml = xmlbuilder.create('clientes');
 
-
-  // Procesar cada línea
   lines.forEach((line) => {
-  
     try {
-      // Identificar y parsear la línea según el formato deseado
-      const parsedObject = parseLine(line,delimiter);
+      const parsedObject = parseLine(line, delimiter);
       const cliente = xml.ele('cliente');
-      cliente.ele('documento',parsedObject.documento);
-      cliente.ele('nombre',parsedObject.nombre);
+      cliente.ele('documento', parsedObject.documento);
+      cliente.ele('nombre', parsedObject.nombre);
       cliente.ele('tarjeta', encryptCardNumber(parsedObject.tarjeta));
-      cliente.ele('tipo',parsedObject.tipo);
-      cliente.ele('telefono',parsedObject.telefono);
-      cliente.ele('poligono',parsedObject.poligono);
-
-    // Obtener el XML como una cadena
+      cliente.ele('tipo', parsedObject.tipo);
+      cliente.ele('telefono', parsedObject.telefono);
+      cliente.ele('poligono', parsedObject.poligono);
     } catch (error) {
       console.error(`Error parsing line: ${line}`);
     }
-
   });
- const xmlString = xml.end({ pretty: true });
 
-
+  const xmlString = xml.end({ pretty: true });
   return xmlString;
 }
+
 // Ruta para subir el archivo TXT y convertirlo a XML
 app.post("/convert_txt_to_xml/:delimiter/:key", upload.single("file"), (req, res) => {
-  // Aquí puedes realizar la lógica de conversión de TXT a XML
-  // req.file contiene la información del archivo subido
   const { delimiter, key } = req.params;
-
-  // Leer el contenido del archivo TXT
   const txtContent = fs.readFileSync(req.file.path, "utf-8");
-
-  // Convertir el contenido del archivo TXT a XML
   const xml = convertTxtToXml(txtContent, delimiter, key);
-
   res.set("Content-Type", "application/xml");
   res.send(xml);
 });
+
 //////////////////////////////////////////////////////////////////////////////////////////
 ////////////TXT TO JSON/////////////////////
 //////////////////////////////////////////////////////////////////////////
 
-
 function convertTxtToJson(txtContent, delimiter, key) {
-  // Realizar aquí la lógica de conversión de TXT a JSON según tus requerimientos
-  // En este ejemplo, se asume que cada línea del archivo TXT contiene un objeto JSON válido
-
   const lines = txtContent.split("\n");
-
   let json = [];
 
-  // Procesar cada línea
   lines.forEach((line) => {
     try {
-      // Identificar y parsear la línea según el formato deseado
       const parsedObject = parseLine(line, delimiter);
-      // Agregar el objeto JSON al arreglo
       json.push(parsedObject);
     } catch (error) {
       console.error(`Error parsing line: ${line}`);
@@ -144,14 +118,9 @@ function convertTxtToJson(txtContent, delimiter, key) {
 
 // Ruta para subir el archivo TXT y convertirlo a JSON
 app.post("/convert_txt_to_json/:delimiter/:key", upload.single("file"), (req, res) => {
-
   const { delimiter, key } = req.params;
-  // Leer el contenido del archivo TXT
   const txtContent = fs.readFileSync(req.file.path, "utf-8");
-
-  // Convertir el contenido del archivo TXT a JSON
-  const jsonContent = convertTxtToJson(txtContent,delimiter, key);
-
+  const jsonContent = convertTxtToJson(txtContent, delimiter, key);
   res.json(jsonContent);
 });
 
@@ -168,6 +137,7 @@ function convertXMLtoTXT(xmlContent, delimiter, key, publicKey) {
     }
 
     const clientes = result.clientes.cliente;
+
     clientes.forEach(cliente => {
       const attributes = Object.keys(cliente);
       const values = attributes.map((attribute) => {
@@ -176,8 +146,8 @@ function convertXMLtoTXT(xmlContent, delimiter, key, publicKey) {
         }
         return cliente[attribute][0];
       });
-      const line = values.join(delimiter);
 
+      const line = values.join(delimiter);
       txtContent += line + '\n';
     });
   });
@@ -185,23 +155,15 @@ function convertXMLtoTXT(xmlContent, delimiter, key, publicKey) {
   return txtContent;
 }
 
-
-
-//Ruta para subir el archivo XML y convertirlo a TXT
 // Ruta para subir el archivo XML y convertirlo a TXT
 app.post('/convert_xml_to_txt/:delimiter/:key', upload.single('file'), (req, res) => {
-
   const { delimiter, key } = req.params;
-
-  // Leer el contenido del archivo XML
   const xmlContent = fs.readFileSync(req.file.path, 'utf-8');
-
-  // Convertir el contenido del archivo XML a TXT
   const txtContent = convertXMLtoTXT(xmlContent, delimiter, key, req.body.publicKey);
-
   res.set('Content-Type', 'text/plain');
   res.send(txtContent);
 });
+
 ///////////////////////////////////////////////////////////////////////
 /////////////////  JSON TO TXT ////////////////
 //////////////////////////////////////////////////////////////////////
@@ -215,37 +177,16 @@ function convertJsonToTxt(jsonArray, delimiter, key, publicKey) {
   }).join('\n');
   return txt;
 }
-  
-  // Ruta para recibir un objeto JSON y convertirlo a TXT
-  app.post('/convert_json_to_txt/:delimiter/:key', upload.single('file'), (req, res) => {
 
-    const { delimiter, key } = req.params;
-
-    
-    const jsonContent= fs.readFileSync(req.file.path, 'utf-8');
-    const jsonArray = JSON.parse(jsonContent, delimiter);
-    // Convertir el array JSON a TXT
-    const txtContent = convertJsonToTxt(jsonArray, delimiter, key, req.body.publicKey);  
-    
-  /*try{
-    const jsonArray = JSON.parse(jsonContent);
-  
-    if (Array.isArray(jsonArray)) {
-      // Aquí puedes realizar las operaciones con el jsonArray válido
-      
-      // Convertir el array JSON a TXT
-       txtContent = convertJsonToTxt(jsonArray);  
-    } else {
-      console.log('El archivo JSON no contiene un array válido.');
-    }
-  } catch (error) {
-    console.error('Error al analizar el contenido JSON:', error);
-  }*/
-  
-  
-    res.set('Content-Type', 'text/plain');
-    res.send(txtContent);
-  });
+// Ruta para recibir un objeto JSON y convertirlo a TXT
+app.post('/convert_json_to_txt/:delimiter/:key', upload.single('file'), (req, res) => {
+  const { delimiter, key } = req.params;
+  const jsonContent = fs.readFileSync(req.file.path, 'utf-8');
+  const jsonArray = JSON.parse(jsonContent, delimiter);
+  const txtContent = convertJsonToTxt(jsonArray, delimiter, key, req.body.publicKey);
+  res.set('Content-Type', 'text/plain');
+  res.send(txtContent);
+});
 
 /////////////////////////////////////////
 // Iniciar el servidor
