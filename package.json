@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "api para proyecto de admi de riesgos",
   "main": "index.js",
+  "engines": {
+    "node": "16.x"
+  },
   "scripts": {
     "start": "node index.js",
     "test": "test"
