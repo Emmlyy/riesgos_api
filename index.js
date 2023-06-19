@@ -25,9 +25,10 @@ app.use(function (req, res, next) {
   next();
 });
 
+app.use(express.static('public'));
 // Rutas de ejemplo
 app.get("/", (req, res) => {
-  res.send("¡Hola, mundo!");
+  res.sendFile('index.html', {root: path.join(__dirname, 'public')});
 });
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -197,3 +198,5 @@ app.post('/convert_json_to_txt/:delimiter', upload.single('file'), (req, res) =>
 app.listen(PORT, () => {
   console.log(`La API está escuchando en el puerto ${PORT}`);
 });
+
+module.exports = app;
